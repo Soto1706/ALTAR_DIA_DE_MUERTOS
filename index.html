@@ -1,0 +1,114 @@
+<!doctype html>
+<html lang="es">
+<head>
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1, user-scalable=no">
+    <title>Altar RA | Día de Muertos</title>
+    <link rel="stylesheet" href="style.css">
+    <script src="https://aframe.io/releases/1.5.0/aframe.min.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/mind-ar@1.2.5/dist/mindar-image-aframe.prod.js"></script>
+</head>
+<body>
+    <div id="intro">
+        <h1>Altar de Día de Muertos</h1>
+        <p>Enfoca una de las seis imágenes impresas para descubrir su animación.</p>
+        <p id="estado">Preparando experiencia...</p>
+        <button id="start" disabled>Iniciar cámara</button>
+        <small>Necesitas HTTPS, permiso de cámara y el archivo targets.mind.</small>
+    </div>
+    
+    <div id="hud" hidden>
+        <span id="nombre">Buscando imagen...</span>
+        <button id="info"></button>
+    </div>
+    
+    <div id="mensaje" hidden></div>
+    
+    <a-scene mindar-image="imageTargetSrc: ./targets.mind; autoStart: false; maxTrack: 2; filterMinCF: 0.0001; filterBeta: 0.001" color-space="sRGB" renderer="colorManagement: true, physicallyCorrectLights" vr-mode-ui="enabled: false" device-orientation-permission-ui="enabled: false" embedded>
+        <a-assets>
+            <img id="im0" src="imagenes/cempasuchil.jpg">
+            <img id="im1" src="imagenes/veladoras.jpg">
+            <img id="im2" src="imagenes/mariposa.jpg">
+            <img id="im3" src="imagenes/catrina.jpg">
+            <img id="im4" src="imagenes/pan_muerto.jpg">
+            <img id="im5" src="imagenes/calavera.jpg">
+        </a-assets>
+        
+        <a-camera position="0 0 0" look-controls="enabled: false"></a-camera>
+        
+        <!-- target 0: flores -->
+        <a-entity mindar-image-target="targetIndex: 0" data-index="0">
+            <!-- CAJA DE DIAGNÓSTICO AÑADIDA AQUÍ -->
+            <a-box position="0 0 0.3" width="0.5" height="0.5" depth="0.5" color="red" animation="property: rotation; to: 0 360 0; loop: true; dur: 3000"></a-box>
+            
+            <a-entity position="0 0 0.12">
+                <a-torus color="#ff9d00" radius="0.31" radius-tubular="0.045" animation="property: rotation; to: 60 360; loop: true; dur: 8000; easing: linear"></a-torus>
+                <a-sphere color="#ffca28" radius="0.12" animation="property: position; from: 0 -0.08 0; to: 0 0.10 0; dir: alternate; loop: true; dur: 1200"></a-sphere>
+                <a-text value="CEMPASUCHIL" align="center" color="#fff" width="2" position="0 -0.43 0"></a-text>
+            </a-entity>
+        </a-entity>
+        
+        <!-- target 1: veladoras -->
+        <a-entity mindar-image-target="targetIndex: 1" data-index="1">
+            <a-entity position="0 0 0.13">
+                <a-cylinder position="-0.25 -0.12 0" color="#fff1c1" radius="0.10" height="0.32"></a-cylinder>
+                <a-cylinder position="0.25 -0.12 0" color="#f7c1d7" radius="0.10" height="0.32"></a-cylinder>
+                <a-cone position="-0.25 0.15 0" color="#ff9900" radius-bottom="0.065" height="0.23" animation="property: scale; from: 1 0.7 1; to: 1 1.2 1; dir: alternate; loop: true; dur: 350"></a-cone>
+                <a-cone position="0.25 0.15 0" color="#ffb300" radius-bottom="0.065" height="0.23" animation="property: scale; from: 1 1.2 1; to: 1 0.7 1; dir: alternate; loop: true; dur: 410"></a-cone>
+                <a-text value="LUZ Y RECUERDO" align="center" color="#fff" width="2" position="0 -0.44 0"></a-text>
+            </a-entity>
+        </a-entity>
+        
+        <!-- target 2: mariposa -->
+        <a-entity mindar-image-target="targetIndex: 2" data-index="2">
+            <a-entity animation="property: position; from: -0.18 -0.05 0.18; to: 0.18 0.13 0.22; dir: alternate; loop: true; dur: 1800">
+                <a-sphere color="#191919" radius="0.055" scale="0.45 2.3 0.5"></a-sphere>
+                <a-entity position="-0.15 0 0" animation="property: rotation; from: 0 0 15; to: 0 65 -15; dir: alternate; loop: true; dur: 300">
+                    <a-plane color="#ff8b00" width="0.31" height="0.37" rotation="0 0 -25" material="side: double"></a-plane>
+                </a-entity>
+                <a-entity position="0.15 0 0" animation="property: rotation; from: 0 0 15; to: 0 -65 15; dir: alternate; loop: true; dur: 300">
+                    <a-plane color="#ff8b00" width="0.31" height="0.37" rotation="0 0 25" material="side: double"></a-plane>
+                </a-entity>
+            </a-entity>
+            <a-text value="MARIPOSA MONARCA" align="center" color="#fff" width="2" position="0 -0.42 0.15"></a-text>
+        </a-entity>
+        
+        <!-- target 3: catrina -->
+        <a-entity mindar-image-target="targetIndex: 3" data-index="3">
+            <a-entity position="0 0 0.2" animation="property: rotation; to: 0 360 0; loop: true; dur: 7500; easing: linear">
+                <a-sphere color="#f8ebd1" radius="0.22" scale="0.9 1.1 0.65"></a-sphere>
+                <a-torus color="#8b27ba" radius="0.30" radius-tubular="0.055" rotation="90 0 0" position="0 0.17 0"></a-torus>
+                <a-sphere color="#222" radius="0.047" position="-0.085 0.04 0.14"></a-sphere>
+                <a-sphere color="#222" radius="0.047" position="0.085 0.04 0.14"></a-sphere>
+                <a-cone color="#222" radius-bottom="0.035" height="0.075" position="0 -0.055 0.16"></a-cone>
+            </a-entity>
+            <a-text value="LA CATRINA" align="center" color="#fff" width="2" position="0 -0.43 0.15"></a-text>
+        </a-entity>
+        
+        <!-- target 4: pan -->
+        <a-entity mindar-image-target="targetIndex: 4" data-index="4">
+            <a-entity position="0 0 0.20" animation="property: rotation; to: 0 360 0; loop: true; dur: 6500; easing: linear">
+                <a-sphere color="#c87934" radius="0.25" scale="1.5 0.65 1"></a-sphere>
+                <a-cylinder color="#f2bf76" radius="0.04" height="0.54" rotation="0 0 90" position="0 0.10 0"></a-cylinder>
+                <a-cylinder color="#f2bf76" radius="0.04" height="0.42" rotation="90 0 0" position="0 0.10 0"></a-cylinder>
+                <a-sphere color="#f7d393" radius="0.065" position="0 0.16 0"></a-sphere>
+            </a-entity>
+            <a-text value="PAN DE MUERTO" align="center" color="#fff" width="2" position="0 -0.43 0.1"></a-text>
+        </a-entity>
+        
+        <!-- target 5: calavera -->
+        <a-entity mindar-image-target="targetIndex: 5" data-index="5">
+            <a-entity position="0 0 0.22" animation="property: rotation; to: 0 360 0; loop: true; dur: 9000; easing: linear">
+                <a-sphere color="#f5e6cb" radius="0.29" scale="0.85 1 0.7"></a-sphere>
+                <a-sphere color="#4c1579" radius="0.085" position="-0.10 0.04 0.18"></a-sphere>
+                <a-sphere color="#4c1579" radius="0.085" position="0.10 0.04 0.18"></a-sphere>
+                <a-cone color="#1c1623" radius-bottom="0.045" height="0.08" position="0 -0.08 0.19"></a-cone>
+                <a-box color="#fff" width="0.22" height="0.06" depth="0.04" position="0 -0.19 0.17"></a-box>
+            </a-entity>
+            <a-text value="DIA DE MUERTOS" align="center" color="#fff" width="2" position="0 -0.43 0.15"></a-text>
+        </a-entity>
+        
+    </a-scene>
+    <script src="script.js"></script>
+</body>
+</html>
