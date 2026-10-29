@@ -1,1 +1,75 @@
-*{box-sizing:border-box}body{margin:0;background:#160921;color:white;font-family:system-ui,Arial}#intro{position:fixed;z-index:10;inset:0;display:flex;flex-direction:column;align-items:center;justify-content:center;text-align:center;padding:25px;background:linear-gradient(160deg,#270c3e,#631e60,#a24a11)}h1{font-size:clamp(26px,6vw,45px)}p{max-width:500px;line-height:1.5}button{border:0;border-radius:14px;background:#ffb02e;color:#261027;font-weight:bold;font-size:17px;padding:14px 25px;cursor:pointer}button:disabled{opacity:.4}small{margin-top:20px;max-width:420px}#hud{position:fixed;z-index:5;top:12px;left:12px;right:12px;background:#270c3edb;border-radius:15px;padding:10px;display:flex;justify-content:space-between;align-items:center}#hud[hidden],#mensaje[hidden]{display:none}#info{padding:7px 12px}#mensaje{position:fixed;z-index:8;bottom:30px;left:5%;width:90%;padding:18px;border-radius:15px;background:#250b36e8;text-align:center}a-scene{position:fixed!important;inset:0}
+*{box-sizing:border-box}
+
+body{
+  margin:0;
+  background:#160921;
+  color:white;
+  font-family:system-ui,Arial;
+  overflow:hidden;
+}
+
+/* Contenedor donde MindAR coloca el video de la cámara y el canvas 3D */
+#ar-container{
+  position:fixed;
+  inset:0;
+  width:100%;
+  height:100%;
+  overflow:hidden;
+}
+
+#intro{
+  position:fixed;
+  z-index:10;
+  inset:0;
+  display:flex;
+  flex-direction:column;
+  align-items:center;
+  justify-content:center;
+  text-align:center;
+  padding:25px;
+  background:linear-gradient(160deg,#270c3e,#631e60,#a24a11);
+}
+
+h1{font-size:clamp(26px,6vw,45px)}
+p{max-width:500px;line-height:1.5}
+
+button{
+  border:0;
+  border-radius:14px;
+  background:#ffb02e;
+  color:#261027;
+  font-weight:bold;
+  font-size:17px;
+  padding:14px 25px;
+  cursor:pointer;
+}
+button:disabled{opacity:.4}
+small{margin-top:20px;max-width:420px}
+
+#hud{
+  position:fixed;
+  z-index:5;
+  top:12px;
+  left:12px;
+  right:12px;
+  background:#270c3edb;
+  border-radius:15px;
+  padding:10px;
+  display:flex;
+  justify-content:space-between;
+  align-items:center;
+}
+#hud[hidden],#mensaje[hidden]{display:none}
+#info{padding:7px 12px}
+
+#mensaje{
+  position:fixed;
+  z-index:8;
+  bottom:30px;
+  left:5%;
+  width:90%;
+  padding:18px;
+  border-radius:15px;
+  background:#250b36e8;
+  text-align:center;
+}
