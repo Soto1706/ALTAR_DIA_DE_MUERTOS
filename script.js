@@ -67,6 +67,69 @@ function construirEscenario(el) {
     animation: 'property: material.opacity; from: 0.2; to: 0.8; dir: alternate; loop: true; dur: 1300; easing: easeInOutSine'
   }, flota);
 
+  // Papel picado: banderitas que cuelgan arriba de la tarjeta y se mecen
+  const banderas = crear('a-entity', {
+    scale: '0.01 0.01 0.01',
+    animation__in: 'property: scale; from: 0.01 0.01 0.01; to: 1 1 1; dur: 900; delay: 400; easing: easeOutBack; startEvents: pop'
+  }, flota);
+  el.banderas = banderas;
+
+  const PAPEL = ['#ff8b00', '#a020f0', '#ff1a8c', '#ffd54f', '#2ec4b6', '#ff8b00', '#a020f0'];
+  const NB = PAPEL.length;
+  const puntos = [];
+  for (let k = 0; k < NB; k++) {
+    const t = (k / (NB - 1)) * 2 - 1;                       // de -1 a 1
+    puntos.push({ x: t * 0.48, y: h / 2 + 0.22 - 0.04 * (1 - t * t) });  // la cuerda cuelga al centro
+  }
+
+  // Cuerda (un segmento delgado entre cada par de banderitas)
+  for (let k = 0; k < NB - 1; k++) {
+    const a = puntos[k], b = puntos[k + 1];
+    const largo = Math.hypot(b.x - a.x, b.y - a.y);
+    const ang = Math.atan2(b.y - a.y, b.x - a.x) * 180 / Math.PI - 90;
+    crear('a-cylinder', {
+      radius: 0.003,
+      height: largo.toFixed(3),
+      position: `${((a.x + b.x) / 2).toFixed(3)} ${((a.y + b.y) / 2).toFixed(3)} 0.05`,
+      rotation: `0 0 ${ang.toFixed(1)}`,
+      material: 'shader: flat; color: #fff3d6'
+    }, banderas);
+  }
+
+  // Banderitas: cada una se mece de lado a lado y "ondea" sobre su eje
+  puntos.forEach((p, k) => {
+    const col = PAPEL[k];
+    const pivote = crear('a-entity', {
+      position: `${p.x.toFixed(3)} ${p.y.toFixed(3)} 0.05`,
+      rotation: '0 0 -8',
+      animation: `property: rotation; from: 0 0 -8; to: 0 0 8; dir: alternate; loop: true; dur: ${Math.round(rand(1100, 1700))}; delay: ${Math.round(rand(0, 800))}; easing: easeInOutSine`
+    }, banderas);
+    const ondea = crear('a-entity', {
+      animation: `property: rotation; from: 0 -20 0; to: 0 20 0; dir: alternate; loop: true; dur: ${Math.round(rand(1500, 2400))}; delay: ${Math.round(rand(0, 800))}; easing: easeInOutSine`
+    }, pivote);
+    const mat = `shader: flat; color: ${col}; side: double`;
+    crear('a-plane', { width: 0.12, height: 0.14, position: '0 -0.07 0', material: mat }, ondea);
+    // Picos del borde inferior
+    [-0.04, 0, 0.04].forEach(x => {
+      crear('a-triangle', {
+        'vertex-a': '-0.02 0 0',
+        'vertex-b': '0.02 0 0',
+        'vertex-c': '0 -0.035 0',
+        position: `${x} -0.14 0`,
+        material: mat
+      }, ondea);
+    });
+    // Adorno calado en el centro
+    crear('a-circle', {
+      radius: 0.03, position: '0 -0.07 0.002',
+      material: 'shader: flat; color: #ffffff; transparent: true; opacity: 0.55; side: double'
+    }, ondea);
+    crear('a-circle', {
+      radius: 0.012, position: '0 -0.07 0.004',
+      material: mat
+    }, ondea);
+  });
+
   // LA IMAGEN ESCANEADA, que aparece con efecto "pop"
   el.plano = crear('a-plane', {
     width: 1,
@@ -75,7 +138,8 @@ function construirEscenario(el) {
     scale: '0.2 0.2 0.2',
     material: `shader: flat; src: #im${i}; transparent: true; opacity: 0`,
     animation__pop: 'property: scale; from: 0.2 0.2 0.2; to: 1 1 1; dur: 800; easing: easeOutBack; startEvents: pop',
-    animation__fade: 'property: material.opacity; from: 0; to: 1; dur: 500; easing: linear; startEvents: pop'
+    animation__fade: 'property: material.opacity; from: 0; to: 1; dur: 500; easing: linear; startEvents: pop',
+    animation__bump: 'property: scale; from: 1.12 1.12 1.12; to: 1 1 1; dur: 600; easing: easeOutElastic; startEvents: bump'
   }, flota);
 
   // Letrero con el nombre debajo de la tarjeta
@@ -122,6 +186,38 @@ function construirEscenario(el) {
   }
 }
 
+/* ---------- Interacción: toca la pantalla y explotan los pétalos ---------- */
+const visibles = new Set();   // tarjetas que la cámara está viendo ahora
+
+function explosion(el) {
+  const cont = crear('a-entity', { position: '0 0 0.2' }, el);
+  const colores = ['#ff9d00', '#ffb74d', '#ffd54f', '#ff1a8c', '#a020f0'];
+  for (let k = 0; k < 30; k++) {
+    const dx = rand(-0.9, 0.9), dy = rand(-0.6, 0.9), dz = rand(0, 0.4);
+    const dur = Math.round(rand(1100, 1800));
+    crear('a-circle', {
+      radius: rand(0.015, 0.03).toFixed(3),
+      scale: '1 1.5 1',
+      position: '0 0 0',
+      material: `shader: flat; color: ${colores[k % colores.length]}; transparent: true; opacity: 1; side: double`,
+      animation: `property: position; from: 0 0 0; to: ${dx.toFixed(3)} ${dy.toFixed(3)} ${dz.toFixed(3)}; dur: ${dur}; easing: easeOutCubic`,
+      animation__rot: `property: rotation; from: 0 0 0; to: ${Math.round(rand(90, 360))} ${Math.round(rand(90, 360))} ${Math.round(rand(0, 180))}; dur: ${dur}; easing: linear`,
+      animation__fade: `property: material.opacity; from: 1; to: 0; dur: 600; delay: ${dur - 600}; easing: linear`
+    }, cont);
+  }
+  setTimeout(() => { if (cont.parentNode) cont.parentNode.removeChild(cont); }, 2300);
+}
+
+// Un toque en la pantalla (fuera de los botones) activa el efecto en las tarjetas visibles
+document.getElementById('ar-container').addEventListener('pointerdown', () => {
+  if (visibles.size === 0) return;
+  visibles.forEach((el) => {
+    explosion(el);
+    if (el.plano) el.plano.emit('bump');
+  });
+  if (navigator.vibrate) navigator.vibrate(40);
+});
+
 /* ---------- Eventos de la escena ---------- */
 scene.addEventListener('loaded', () => {
   ar = scene.systems['mindar-image-system'];
@@ -154,13 +250,16 @@ document.querySelectorAll('[mindar-image-target]').forEach((el) => {
   el.addEventListener('targetFound', () => {
     const i = Number(el.dataset.index);
     nombre.textContent = ' ' + datos[i][0];
-    mensaje.textContent = datos[i][1];
+    mensaje.textContent = datos[i][1] + ' Toca la pantalla para una sorpresa.';
     mensaje.hidden = false;
-    if (el.plano) el.plano.emit('pop');   // la imagen "salta" al aparecer
+    visibles.add(el);
+    if (el.plano) el.plano.emit('pop');         // la imagen "salta" al aparecer
+    if (el.banderas) el.banderas.emit('pop');   // las banderitas se despliegan
   });
   el.addEventListener('targetLost', () => {
     nombre.textContent = 'Apunta hacia una imagen del altar';
     mensaje.hidden = true;
+    visibles.delete(el);
   });
 });
 
